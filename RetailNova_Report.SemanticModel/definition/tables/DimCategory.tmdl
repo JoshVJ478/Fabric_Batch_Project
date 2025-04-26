@@ -1,0 +1,34 @@
+table DimCategory
+	lineageTag: a243a214-2936-4733-8a6b-544b87479252
+	sourceLineageTag: [dbo].[DimCategory]
+
+	column CategoryName
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: b5f1ebe6-c0f0-4509-b9cb-05677406b996
+		sourceLineageTag: CategoryName
+		summarizeBy: none
+		sourceColumn: CategoryName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryKey
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: ec70c321-6b36-45ca-a927-cd3b2ea17b33
+		sourceLineageTag: CategoryKey
+		summarizeBy: none
+		sourceColumn: CategoryKey
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCategory = entity
+		mode: directLake
+		source
+			entityName: DimCategory
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	annotation PBI_ResultType = Table
+

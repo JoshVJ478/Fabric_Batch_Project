@@ -1,0 +1,54 @@
+table DimCustomer
+	lineageTag: f88ba33d-ffcc-43f4-bb85-d1b7f3580efe
+	sourceLineageTag: [dbo].[DimCustomer]
+
+	column CustomerKey
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: bb892cd7-fe5a-45c4-89b0-d48bd5565a82
+		sourceLineageTag: CustomerKey
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerSourceID
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: aecc3c3d-f380-4189-ad47-5e4d3650a097
+		sourceLineageTag: CustomerSourceID
+		summarizeBy: none
+		sourceColumn: CustomerSourceID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerName
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 8d9a37f7-db7d-4dc6-bced-0776ea32039a
+		sourceLineageTag: CustomerName
+		summarizeBy: none
+		sourceColumn: CustomerName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerSegment
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 9eb88458-f4bb-4136-8d98-8339f6a4eaf5
+		sourceLineageTag: CustomerSegment
+		summarizeBy: none
+		sourceColumn: CustomerSegment
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCustomer = entity
+		mode: directLake
+		source
+			entityName: DimCustomer
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	annotation PBI_ResultType = Table
+
