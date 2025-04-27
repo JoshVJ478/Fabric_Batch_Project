@@ -15,12 +15,12 @@ annotation PBI_QueryOrder = ["DatabaseQuery"]
 
 annotation PBI_ProTooling = ["WebModelingEdit"]
 
-ref table DimDate
-ref table DimCustomer
-ref table DimStore
-ref table DimProduct
-ref table FactSales
 ref table DimCategory
+ref table DimProduct
+ref table DimStore
+ref table DimCustomer
+ref table FactSales
+ref table DimDate
 
 ref cultureInfo en-US
 

@@ -17,12 +17,13 @@
         "sourceLineageTag": "[dbo].[DimCategory]",
         "columns": [
           {
-            "name": "CategoryName",
-            "dataType": "string",
-            "sourceColumn": "CategoryName",
-            "sourceProviderType": "varchar",
-            "sourceLineageTag": "CategoryName",
-            "summarizeBy": "none",
+            "name": "CategoryKey",
+            "dataType": "int64",
+            "sourceColumn": "CategoryKey",
+            "formatString": "0",
+            "sourceProviderType": "int",
+            "sourceLineageTag": "CategoryKey",
+            "summarizeBy": "sum",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -31,13 +32,12 @@
             ]
           },
           {
-            "name": "CategoryKey",
-            "dataType": "int64",
-            "sourceColumn": "CategoryKey",
-            "formatString": "0",
-            "sourceProviderType": "int",
-            "sourceLineageTag": "CategoryKey",
-            "summarizeBy": "sum",
+            "name": "CategoryName",
+            "dataType": "string",
+            "sourceColumn": "CategoryName",
+            "sourceProviderType": "varchar",
+            "sourceLineageTag": "CategoryName",
+            "summarizeBy": "none",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -443,12 +443,13 @@
         "sourceLineageTag": "[dbo].[DimStore]",
         "columns": [
           {
-            "name": "CityName",
-            "dataType": "string",
-            "sourceColumn": "CityName",
-            "sourceProviderType": "varchar",
-            "sourceLineageTag": "CityName",
-            "summarizeBy": "none",
+            "name": "StoreKey",
+            "dataType": "int64",
+            "sourceColumn": "StoreKey",
+            "formatString": "0",
+            "sourceProviderType": "int",
+            "sourceLineageTag": "StoreKey",
+            "summarizeBy": "sum",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -457,13 +458,12 @@
             ]
           },
           {
-            "name": "StoreKey",
-            "dataType": "int64",
-            "sourceColumn": "StoreKey",
-            "formatString": "0",
-            "sourceProviderType": "int",
-            "sourceLineageTag": "StoreKey",
-            "summarizeBy": "sum",
+            "name": "CityName",
+            "dataType": "string",
+            "sourceColumn": "CityName",
+            "sourceProviderType": "varchar",
+            "sourceLineageTag": "CityName",
+            "summarizeBy": "none",
             "annotations": [
               {
                 "name": "SummarizationSetBy",

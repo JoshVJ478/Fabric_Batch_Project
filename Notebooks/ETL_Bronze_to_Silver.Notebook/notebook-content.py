@@ -8,12 +8,12 @@
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "a07020dd-a4dc-4ac0-b566-1e33863ee367",
+# META       "default_lakehouse": "f8b1b017-3b83-4294-a9ea-7fc47416e097",
 # META       "default_lakehouse_name": "LH_Bronze",
-# META       "default_lakehouse_workspace_id": "ccccd7d7-1d84-4bf9-80a8-07c46acd9896",
+# META       "default_lakehouse_workspace_id": "703af36c-d0b8-4993-a4dd-4a53f1164897",
 # META       "known_lakehouses": [
 # META         {
-# META           "id": "a07020dd-a4dc-4ac0-b566-1e33863ee367"
+# META           "id": "f8b1b017-3b83-4294-a9ea-7fc47416e097"
 # META         }
 # META       ]
 # META     }
@@ -47,7 +47,7 @@ from notebookutils import mssparkutils
 # Asegúrate de que estos nombres de Lakehouse y la ruta ABFS sean correctos para tu entorno.
 bronze_lakehouse_name = "LH_Bronze" # Nombre del Lakehouse para la capa Bronze
 silver_lakehouse_name = "LH_Silver" # Nombre del Lakehouse para la capa Silver
-workspace_name = "RetailNova_Batch" # **AJUSTA ESTO A TU NOMBRE DE WORKSPACE REAL**
+workspace_name = "RetailNova_Batchv2" # **AJUSTA ESTO A TU NOMBRE DE WORKSPACE REAL**
 
 # Construir las rutas base ABFS para los Lakehouses Bronze y Silver
 bronze_layer_abfs_base_path = f"abfss://{workspace_name}@onelake.dfs.fabric.microsoft.com/{bronze_lakehouse_name}.Lakehouse/Tables/"

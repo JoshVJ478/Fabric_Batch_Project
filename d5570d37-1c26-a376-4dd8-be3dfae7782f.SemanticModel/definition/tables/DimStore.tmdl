@@ -1,25 +1,25 @@
 table DimStore
-	lineageTag: 586c928d-8311-4875-98b1-8e5215172cfa
+	lineageTag: 8ca67c4c-d221-4e01-894a-485e639e8868
 	sourceLineageTag: [dbo].[DimStore]
-
-	column CityName
-		dataType: string
-		sourceProviderType: varchar(8000)
-		lineageTag: 2697a2c0-99a5-42e6-9c0d-9326ea6f379e
-		sourceLineageTag: CityName
-		summarizeBy: none
-		sourceColumn: CityName
-
-		annotation SummarizationSetBy = Automatic
 
 	column StoreKey
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: 1c77276f-4fad-4b4a-b5c4-dcbfc599c57a
+		lineageTag: dac41011-993e-4183-ab63-410133d28ea4
 		sourceLineageTag: StoreKey
 		summarizeBy: none
 		sourceColumn: StoreKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column CityName
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 8c5dd8d3-43cb-4846-8d08-ac04eaea379e
+		sourceLineageTag: CityName
+		summarizeBy: none
+		sourceColumn: CityName
 
 		annotation SummarizationSetBy = Automatic
 

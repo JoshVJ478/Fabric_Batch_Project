@@ -1,12 +1,12 @@
 table FactSales
-	lineageTag: 8e2b453c-cea4-4502-9eed-0e0843b8c935
+	lineageTag: d97f2368-3a52-4e40-b02d-67340f540ea8
 	sourceLineageTag: [dbo].[FactSales]
 
 	column SalesOrderLineKey
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: 9821155c-d287-49f7-865c-d2deb9b27eb3
+		lineageTag: 0442f63f-9cbd-4f6d-9816-49219167dfdc
 		sourceLineageTag: SalesOrderLineKey
 		summarizeBy: count
 		sourceColumn: SalesOrderLineKey
@@ -17,7 +17,7 @@ table FactSales
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: 9e5b83a0-bf0f-4c26-935a-ee9a1205a4f1
+		lineageTag: 9db61ad0-b607-4d2e-97e2-f22e81dbb2c6
 		sourceLineageTag: CustomerKey
 		summarizeBy: none
 		sourceColumn: CustomerKey
@@ -28,7 +28,7 @@ table FactSales
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: dc653971-9973-4a49-837d-d54ed892f5ba
+		lineageTag: 5f6ff6c2-d00e-42bc-b651-c4c0ceabcec6
 		sourceLineageTag: ProductKey
 		summarizeBy: none
 		sourceColumn: ProductKey
@@ -39,7 +39,7 @@ table FactSales
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: ed8c1455-e788-4f84-a984-5029880719f0
+		lineageTag: f3d5e8ac-687a-449d-8c93-4c21593c5d75
 		sourceLineageTag: StoreKey
 		summarizeBy: none
 		sourceColumn: StoreKey
@@ -50,7 +50,7 @@ table FactSales
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: 98d11314-09b8-44e9-a176-a7f537338175
+		lineageTag: 4ba7945d-a906-428f-a180-4d62d2763904
 		sourceLineageTag: OrderDateKey
 		summarizeBy: none
 		sourceColumn: OrderDateKey
@@ -61,7 +61,7 @@ table FactSales
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: df4af46a-3b7c-4b5c-913d-ed09db5d6cfd
+		lineageTag: 15c39bd4-9a62-44df-9fa4-21d57f084aec
 		sourceLineageTag: CategoryKey
 		summarizeBy: none
 		sourceColumn: CategoryKey
@@ -71,7 +71,7 @@ table FactSales
 	column OrderSourceID
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 1ef9ae76-12db-472f-9f00-d1574b12131f
+		lineageTag: 652c120f-b8e8-4d9e-9c1d-0feae8ea1261
 		sourceLineageTag: OrderSourceID
 		summarizeBy: none
 		sourceColumn: OrderSourceID
@@ -81,7 +81,7 @@ table FactSales
 	column CustomerSourceID
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: be998c84-734a-444b-92bd-9d3538ab869e
+		lineageTag: c6333f6e-c64e-49ec-b3bf-98fb2a0a3175
 		sourceLineageTag: CustomerSourceID
 		summarizeBy: none
 		sourceColumn: CustomerSourceID
@@ -92,7 +92,7 @@ table FactSales
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: f3fad1d3-e65a-4845-a216-30f6d356e596
+		lineageTag: e6c67cd0-8227-41c5-81fe-70ea83aaadce
 		sourceLineageTag: ProductID_OLTP
 		summarizeBy: sum
 		sourceColumn: ProductID_OLTP
@@ -102,7 +102,7 @@ table FactSales
 	column ShippingCity
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 8ae9e3ad-5e07-4236-a866-b4fdf9247770
+		lineageTag: 45b3a4f8-b37c-498f-b954-c0e637cf707f
 		sourceLineageTag: ShippingCity
 		summarizeBy: none
 		sourceColumn: ShippingCity
@@ -112,7 +112,7 @@ table FactSales
 	column PaymentMethod
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: af6a0c77-c5dc-44b8-a9ec-8b831cad7cee
+		lineageTag: eeeb6772-97c4-431e-bfec-adc4673fd029
 		sourceLineageTag: PaymentMethod
 		summarizeBy: none
 		sourceColumn: PaymentMethod
@@ -122,7 +122,7 @@ table FactSales
 	column ShippingMethod
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: f311c160-399b-4a7c-8718-0527f54a0118
+		lineageTag: 5e4b6d1a-7d26-4e01-9872-de031987d53b
 		sourceLineageTag: ShippingMethod
 		summarizeBy: none
 		sourceColumn: ShippingMethod
@@ -132,7 +132,7 @@ table FactSales
 	column OrderStatus
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: af4fdd41-e66e-47d2-bde3-7a8457cfbaa1
+		lineageTag: ccbe87c8-cc1b-486a-84db-4268fd14206d
 		sourceLineageTag: OrderStatus
 		summarizeBy: none
 		sourceColumn: OrderStatus
@@ -142,7 +142,7 @@ table FactSales
 	column CustomerSegment
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: f1b9600a-fc37-455f-bb47-26a3b7980ed0
+		lineageTag: ee930448-b7e8-4e70-931f-824433070ca3
 		sourceLineageTag: CustomerSegment
 		summarizeBy: none
 		sourceColumn: CustomerSegment
@@ -152,7 +152,7 @@ table FactSales
 	column DeviceType
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: cd9f625e-da45-4cf9-9a2f-2b4c3a2fdd01
+		lineageTag: 97ae53d9-fd15-47b3-baae-953d5938652e
 		sourceLineageTag: DeviceType
 		summarizeBy: none
 		sourceColumn: DeviceType
@@ -162,7 +162,7 @@ table FactSales
 	column ReferralSource
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: da4f1d8c-9fea-49c6-af7b-71d54524e2b4
+		lineageTag: 3e79f3db-dd79-44d7-afb4-04aba51aa422
 		sourceLineageTag: ReferralSource
 		summarizeBy: none
 		sourceColumn: ReferralSource
@@ -172,7 +172,7 @@ table FactSales
 	column PromotionApplied
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 1e05a32a-cdcb-4196-b532-72096337f693
+		lineageTag: 489bbe86-155b-4299-9e02-1de48fdb9ff0
 		sourceLineageTag: PromotionApplied
 		summarizeBy: none
 		sourceColumn: PromotionApplied
@@ -183,7 +183,7 @@ table FactSales
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: ea112470-7abe-4f3b-869b-8bca248708b0
+		lineageTag: 6efb052a-46f6-4651-a66a-fb95f8551ec2
 		sourceLineageTag: Quantity
 		summarizeBy: sum
 		sourceColumn: Quantity
@@ -193,7 +193,7 @@ table FactSales
 	column PricePerUnit
 		dataType: double
 		sourceProviderType: float
-		lineageTag: 8a954d1e-38ce-4d3c-80d1-a2b6eff0ce55
+		lineageTag: 119828ca-0fef-4d96-9adb-4a7ba5300adb
 		sourceLineageTag: PricePerUnit
 		summarizeBy: sum
 		sourceColumn: PricePerUnit
@@ -205,7 +205,7 @@ table FactSales
 	column DiscountPct
 		dataType: double
 		sourceProviderType: float
-		lineageTag: 79cca703-eff3-43f0-a54a-eb1f0505f2a1
+		lineageTag: 3d0cbc1f-3ce5-49a5-8f80-a154cfaaaa1b
 		sourceLineageTag: DiscountPct
 		summarizeBy: sum
 		sourceColumn: DiscountPct
@@ -217,7 +217,7 @@ table FactSales
 	column SalesAmount
 		dataType: double
 		sourceProviderType: float
-		lineageTag: 405420b3-da0d-4758-a04b-4001d8ab4a4b
+		lineageTag: 0a253a20-0368-4d0c-8314-856b558113e6
 		sourceLineageTag: SalesAmount
 		summarizeBy: sum
 		sourceColumn: SalesAmount
@@ -229,7 +229,7 @@ table FactSales
 	column DiscountAmount
 		dataType: double
 		sourceProviderType: float
-		lineageTag: 986be0c7-8efa-4c2b-912a-1cb81f877eb7
+		lineageTag: 8f0c3ef2-b86d-4a39-9466-acf757587208
 		sourceLineageTag: DiscountAmount
 		summarizeBy: sum
 		sourceColumn: DiscountAmount
@@ -241,7 +241,7 @@ table FactSales
 	column GrossAmount
 		dataType: double
 		sourceProviderType: float
-		lineageTag: 133eb244-ae2c-4333-9a1a-a290f0d3e7e9
+		lineageTag: a3472134-b109-4c41-83db-6590daeadc5d
 		sourceLineageTag: GrossAmount
 		summarizeBy: sum
 		sourceColumn: GrossAmount
@@ -254,7 +254,7 @@ table FactSales
 		dataType: dateTime
 		formatString: General Date
 		sourceProviderType: datetime2
-		lineageTag: 1222ade7-2a6b-4bee-b263-3f35bb4dc23a
+		lineageTag: b500f1ee-a099-4ce0-8e35-91b8121c4d60
 		sourceLineageTag: OrderTimestamp
 		summarizeBy: none
 		sourceColumn: OrderTimestamp
@@ -265,7 +265,7 @@ table FactSales
 		dataType: dateTime
 		formatString: General Date
 		sourceProviderType: datetime2
-		lineageTag: bbaa1af8-1644-4a98-893d-0d247c4c7f2c
+		lineageTag: 62b65664-e9c3-4b60-803a-d318c051382d
 		sourceLineageTag: ProcessingTimestampSilver
 		summarizeBy: none
 		sourceColumn: ProcessingTimestampSilver
@@ -276,7 +276,7 @@ table FactSales
 		dataType: dateTime
 		formatString: General Date
 		sourceProviderType: datetime2
-		lineageTag: a6e32991-1d31-4653-8431-88c900a1e2b7
+		lineageTag: efeaabff-4bdd-4c26-9d9c-0a53838b13e2
 		sourceLineageTag: ProcessingTimestampGold
 		summarizeBy: none
 		sourceColumn: ProcessingTimestampGold

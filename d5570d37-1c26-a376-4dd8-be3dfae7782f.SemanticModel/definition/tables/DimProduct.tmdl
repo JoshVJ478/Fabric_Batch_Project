@@ -1,12 +1,12 @@
 table DimProduct
-	lineageTag: ec90be8c-6b81-4a72-84f5-a21624b85fa2
+	lineageTag: 0ce7ee24-b104-4d8b-b350-78713f8af543
 	sourceLineageTag: [dbo].[DimProduct]
 
 	column ProductKey
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: a2e29f84-246c-4e91-a127-77eac089e2c2
+		lineageTag: 1e23c598-05d1-437c-9161-c86fcd5dbfe7
 		sourceLineageTag: ProductKey
 		summarizeBy: none
 		sourceColumn: ProductKey
@@ -17,7 +17,7 @@ table DimProduct
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: b871e20d-99a7-44c9-aaa2-7284f3820d80
+		lineageTag: 7574fe57-d085-4073-abd9-d8b46b42a2ca
 		sourceLineageTag: ProductID_OLTP
 		summarizeBy: none
 		sourceColumn: ProductID_OLTP
@@ -27,7 +27,7 @@ table DimProduct
 	column ProductName
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 7424e661-e374-46cc-bbab-42877aaae30c
+		lineageTag: 48671e52-c42d-424b-977d-40b619c13e85
 		sourceLineageTag: ProductName
 		summarizeBy: none
 		sourceColumn: ProductName
@@ -37,7 +37,7 @@ table DimProduct
 	column ProductCategory
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: be27735f-053a-49b5-8cdf-f45dfeb9c6d0
+		lineageTag: 5126f73f-3984-4698-83d8-1064776daa79
 		sourceLineageTag: ProductCategory
 		summarizeBy: none
 		sourceColumn: ProductCategory
@@ -47,7 +47,7 @@ table DimProduct
 	column ProductBrand
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 4f40377b-45cc-4c17-9493-df1e161ef5f8
+		lineageTag: 84e19461-f689-4abe-89fa-71d056415f7c
 		sourceLineageTag: ProductBrand
 		summarizeBy: none
 		sourceColumn: ProductBrand

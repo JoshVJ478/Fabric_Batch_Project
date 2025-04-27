@@ -1,12 +1,12 @@
 table DimDate
-	lineageTag: c404884b-d61e-4fcc-97f0-e83e534c9d87
+	lineageTag: 23da5fa7-3e40-4ff2-8442-9df6bf9685fd
 	sourceLineageTag: [dbo].[DimDate]
 
 	column Date
 		dataType: dateTime
 		formatString: General Date
 		sourceProviderType: date
-		lineageTag: f9ed9d5e-0f6d-45fe-9f73-17dfeba9c6d2
+		lineageTag: fe7b6d7d-9d53-43f9-929b-8ec1bec2775e
 		sourceLineageTag: Date
 		summarizeBy: none
 		sourceColumn: Date
@@ -17,7 +17,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: 72fd79b1-f718-4b8f-965e-e3753e427146
+		lineageTag: fcb6176d-7579-4cab-a71c-9d5b515885ff
 		sourceLineageTag: DateKey
 		summarizeBy: none
 		sourceColumn: DateKey
@@ -27,7 +27,7 @@ table DimDate
 	column FullDate
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 44411bb6-239f-4aed-8b29-63eb1690c7e4
+		lineageTag: 4b8f3ee6-e439-47bf-95f0-18bcc60dfcc7
 		sourceLineageTag: FullDate
 		summarizeBy: none
 		sourceColumn: FullDate
@@ -37,7 +37,7 @@ table DimDate
 	column Month
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: d27055c9-4d0c-4308-b7cc-ffbe4217ea22
+		lineageTag: c6583be2-de7c-4539-9d59-a407a4511956
 		sourceLineageTag: Month
 		summarizeBy: none
 		sourceColumn: Month
@@ -47,7 +47,7 @@ table DimDate
 	column MonthName
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 5cf9ad81-719d-433b-b22d-460184e1badb
+		lineageTag: 6e0de5fc-7782-4689-96cc-df8a90689a99
 		sourceLineageTag: MonthName
 		summarizeBy: none
 		sourceColumn: MonthName
@@ -57,7 +57,7 @@ table DimDate
 	column Year
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 9cd3ad49-a966-4d4c-94b3-72318e0c8208
+		lineageTag: a8e8ed01-9e3c-4f28-9190-c76a5a629ca3
 		sourceLineageTag: Year
 		summarizeBy: none
 		sourceColumn: Year
@@ -68,7 +68,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: 08f515f8-4e70-4394-b150-47c5fa62d0b3
+		lineageTag: 99204458-64a3-471d-9f8e-4d9fda7e20e2
 		sourceLineageTag: DayOfWeek
 		summarizeBy: none
 		sourceColumn: DayOfWeek
@@ -78,7 +78,7 @@ table DimDate
 	column DayOfWeekName
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 53fdab0f-7b35-467d-974f-a170d5fdfb73
+		lineageTag: 6ff2d9ca-c8ce-4e21-8b17-a7c7fd067926
 		sourceLineageTag: DayOfWeekName
 		summarizeBy: none
 		sourceColumn: DayOfWeekName
@@ -88,7 +88,7 @@ table DimDate
 	column DayOfMonth
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 2d3f40b7-b7e0-4022-b258-de2e388ee4c2
+		lineageTag: d0802749-9acb-4162-8b05-a81f4dd70382
 		sourceLineageTag: DayOfMonth
 		summarizeBy: none
 		sourceColumn: DayOfMonth
@@ -98,7 +98,7 @@ table DimDate
 	column DayOfYear
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 26a06e56-bda2-4fa5-a3de-3eb52acdb172
+		lineageTag: b00ced5b-9cda-4623-9e9e-6e87675cd1b9
 		sourceLineageTag: DayOfYear
 		summarizeBy: none
 		sourceColumn: DayOfYear
@@ -108,7 +108,7 @@ table DimDate
 	column Quarter
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 00685366-7907-4892-9d5b-d4011707f51b
+		lineageTag: 61b5b1b1-749d-4058-a6b3-29e5ca22dd8d
 		sourceLineageTag: Quarter
 		summarizeBy: none
 		sourceColumn: Quarter
@@ -119,7 +119,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: 63790a81-f9ea-40c3-a620-30cf27f0526c
+		lineageTag: 427f0822-3772-4c96-a769-6310570c3815
 		sourceLineageTag: WeekOfYear
 		summarizeBy: none
 		sourceColumn: WeekOfYear

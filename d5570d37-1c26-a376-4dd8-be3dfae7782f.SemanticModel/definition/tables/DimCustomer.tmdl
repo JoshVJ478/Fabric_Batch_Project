@@ -1,12 +1,12 @@
 table DimCustomer
-	lineageTag: f88ba33d-ffcc-43f4-bb85-d1b7f3580efe
+	lineageTag: 9ddc0370-c8b8-4dab-a06e-e1f5b4a3257f
 	sourceLineageTag: [dbo].[DimCustomer]
 
 	column CustomerKey
 		dataType: int64
 		formatString: 0
 		sourceProviderType: int
-		lineageTag: bb892cd7-fe5a-45c4-89b0-d48bd5565a82
+		lineageTag: 80c22838-8835-4d34-8cf4-e59d8434fb80
 		sourceLineageTag: CustomerKey
 		summarizeBy: none
 		sourceColumn: CustomerKey
@@ -16,7 +16,7 @@ table DimCustomer
 	column CustomerSourceID
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: aecc3c3d-f380-4189-ad47-5e4d3650a097
+		lineageTag: f7c8fa1d-3214-467c-8dcc-d38dad89c7e7
 		sourceLineageTag: CustomerSourceID
 		summarizeBy: none
 		sourceColumn: CustomerSourceID
@@ -26,7 +26,7 @@ table DimCustomer
 	column CustomerName
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 8d9a37f7-db7d-4dc6-bced-0776ea32039a
+		lineageTag: 493e2793-9b67-45e5-8b2c-b1b266dbd05e
 		sourceLineageTag: CustomerName
 		summarizeBy: none
 		sourceColumn: CustomerName
@@ -36,7 +36,7 @@ table DimCustomer
 	column CustomerSegment
 		dataType: string
 		sourceProviderType: varchar(8000)
-		lineageTag: 9eb88458-f4bb-4136-8d98-8339f6a4eaf5
+		lineageTag: bb89976a-460d-4246-9f98-c712df111de6
 		sourceLineageTag: CustomerSegment
 		summarizeBy: none
 		sourceColumn: CustomerSegment
