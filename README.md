@@ -1,4 +1,5 @@
 🚀 RetailNova Data Pipeline Project
+
 This repository contains the scripts and configuration needed to simulate a local transactional data source (OLTP) and process it through an ingestion and transformation pipeline in Microsoft Fabric, building a dimensional model in a Lakehouse.
 The project simulates a sales data flow from an e-commerce system (RetailNova) and demonstrates an incremental loading approach using high-watermarks in Microsoft Fabric.
 📦 Repository Contents
