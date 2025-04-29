@@ -2,55 +2,79 @@
   "properties": {
     "activities": [
       {
+        "name": "Lookup1",
         "type": "Lookup",
-        "typeProperties": {
-          "source": {
-            "type": "SqlServerSource",
-            "sqlReaderQuery": "SELECT SCHEMA_NAME(t.schema_id) AS schema_name,\n\t\t\t\t\tt.name as table_name\nFROM sys.tables t\nWHERE SCHEMA_NAME(t.schema_id) = 'OLTP' -- Añadir esta condición para filtrar por esquema\nORDER BY table_name",
-            "partitionOption": "None",
-            "queryTimeout": "02:00:00"
-          },
-          "datasetSettings": {
-            "type": "SqlServerTable",
-            "typeProperties": {
-              "database": "RetailNova"
-            },
-            "schema": [],
-            "externalReferences": {
-              "connection": "ab2ae604-4343-4950-a472-bbd5d2889ef5"
-            },
-            "annotations": []
-          },
-          "firstRowOnly": false
-        },
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [],
         "policy": {
           "timeout": "0.12:00:00",
           "retry": 0,
           "retryIntervalInSeconds": 30,
-          "secureInput": false,
-          "secureOutput": false
+          "secureOutput": false,
+          "secureInput": false
         },
-        "name": "Lookup1",
-        "dependsOn": []
+        "typeProperties": {
+          "source": {
+            "type": "SqlServerSource",
+            "sqlReaderQuery": "SELECT SCHEMA_NAME(t.schema_id) AS schema_name,\n\t\t\t\t\tt.name as table_name\nFROM sys.tables t\nWHERE SCHEMA_NAME(t.schema_id) = 'OLTP' -- Añadir esta condición para filtrar por esquema\nORDER BY table_name",
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "firstRowOnly": false,
+          "datasetSettings": {
+            "annotations": [],
+            "type": "SqlServerTable",
+            "schema": [],
+            "typeProperties": {
+              "database": "RetailNova"
+            },
+            "externalReferences": {
+              "connection": "ab2ae604-4343-4950-a472-bbd5d2889ef5"
+            }
+          }
+        }
       },
       {
+        "name": "ForEach1",
         "type": "ForEach",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [
+          {
+            "activity": "Lookup1",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
         "typeProperties": {
-          "isSequential": true,
           "items": {
             "value": "@activity('Lookup1').output.value",
             "type": "Expression"
           },
+          "isSequential": true,
           "activities": [
             {
+              "name": "Copy data1",
               "type": "Copy",
+              "dependsOn": [],
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureOutput": false,
+                "secureInput": false
+              },
               "typeProperties": {
                 "source": {
                   "type": "SqlServerSource",
-                  "partitionOption": "None",
                   "queryTimeout": "02:00:00",
+                  "partitionOption": "None",
                   "datasetSettings": {
+                    "annotations": [],
                     "type": "SqlServerTable",
+                    "schema": [],
                     "typeProperties": {
                       "schema": {
                         "value": "@{item().schema_name}",
@@ -62,11 +86,9 @@
                       },
                       "database": "RetailNova"
                     },
-                    "schema": [],
                     "externalReferences": {
                       "connection": "ab2ae604-4343-4950-a472-bbd5d2889ef5"
-                    },
-                    "annotations": []
+                    }
                   }
                 },
                 "sink": {
@@ -74,29 +96,30 @@
                   "tableActionOption": "OverwriteSchema",
                   "partitionOption": "None",
                   "datasetSettings": {
+                    "annotations": [],
+                    "linkedService": {
+                      "name": "LH_Bronze",
+                      "properties": {
+                        "annotations": [],
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897",
+                          "artifactId": "f8b1b017-3b83-4294-a9ea-7fc47416e097",
+                          "rootFolder": "Tables"
+                        }
+                      }
+                    },
                     "type": "LakehouseTable",
+                    "schema": [],
                     "typeProperties": {
                       "table": {
                         "value": "@item().table_name",
                         "type": "Expression"
                       }
-                    },
-                    "schema": [],
-                    "linkedService": {
-                      "name": "LH_Bronze",
-                      "properties": {
-                        "type": "Lakehouse",
-                        "typeProperties": {
-                          "artifactId": "7416e097-7fc4-a9ea-4294-3b83f8b1b017",
-                          "workspaceId": "00000000-0000-0000-0000-000000000000",
-                          "rootFolder": "Tables"
-                        },
-                        "annotations": []
-                      }
-                    },
-                    "annotations": []
+                    }
                   }
                 },
+                "enableStaging": false,
                 "translator": {
                   "type": "TabularTranslator",
                   "typeConversion": true,
@@ -104,45 +127,17 @@
                     "allowDataTruncation": false,
                     "treatBooleanAsNumber": false
                   }
-                },
-                "enableStaging": false
-              },
-              "policy": {
-                "timeout": "0.12:00:00",
-                "retry": 0,
-                "retryIntervalInSeconds": 30,
-                "secureInput": false,
-                "secureOutput": false
-              },
-              "name": "Copy data1",
-              "dependsOn": []
+                }
+              }
             }
           ]
-        },
-        "name": "ForEach1",
-        "dependsOn": [
-          {
-            "activity": "Lookup1",
-            "dependencyConditions": [
-              "Succeeded"
-            ]
-          }
-        ]
+        }
       },
       {
-        "type": "TridentNotebook",
-        "typeProperties": {
-          "notebookId": "d58e3385-0f5f-91b8-4eb1-d5660f54b654",
-          "workspaceId": "00000000-0000-0000-0000-000000000000"
-        },
-        "policy": {
-          "timeout": "0.12:00:00",
-          "retry": 0,
-          "retryIntervalInSeconds": 30,
-          "secureInput": false,
-          "secureOutput": false
-        },
         "name": "Bronze to Silver",
+        "type": "TridentNotebook",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
         "dependsOn": [
           {
             "activity": "ForEach1",
@@ -150,22 +145,24 @@
               "Succeeded"
             ]
           }
-        ]
-      },
-      {
-        "type": "TridentNotebook",
-        "typeProperties": {
-          "notebookId": "484a48c6-0da5-ac18-4257-a92a9b31f400",
-          "workspaceId": "00000000-0000-0000-0000-000000000000"
-        },
+        ],
         "policy": {
           "timeout": "0.12:00:00",
           "retry": 0,
           "retryIntervalInSeconds": 30,
-          "secureInput": false,
-          "secureOutput": false
+          "secureOutput": false,
+          "secureInput": false
         },
+        "typeProperties": {
+          "notebookId": "0f54b654-d566-4eb1-91b8-0f5fd58e3385",
+          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897"
+        }
+      },
+      {
         "name": "Silver to Gold",
+        "type": "TridentNotebook",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
         "dependsOn": [
           {
             "activity": "Bronze to Silver",
@@ -173,94 +170,24 @@
               "Succeeded"
             ]
           }
-        ]
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "9b31f400-a92a-4257-ac18-0da5484a48c6",
+          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897"
+        }
       },
       {
-        "type": "ForEach",
-        "typeProperties": {
-          "items": {
-            "value": "@pipeline().parameters.cw_items_m4l",
-            "type": "Expression"
-          },
-          "activities": [
-            {
-              "type": "Copy",
-              "typeProperties": {
-                "source": {
-                  "type": "LakehouseTableSource",
-                  "datasetSettings": {
-                    "type": "LakehouseTable",
-                    "typeProperties": {
-                      "table": {
-                        "value": "@item().source.table",
-                        "type": "Expression"
-                      }
-                    },
-                    "schema": [],
-                    "linkedService": {
-                      "name": "LH_Gold",
-                      "properties": {
-                        "type": "Lakehouse",
-                        "typeProperties": {
-                          "artifactId": "425d39c3-bdc5-b59c-4935-cd42f42e90a7",
-                          "workspaceId": "00000000-0000-0000-0000-000000000000",
-                          "rootFolder": "Tables"
-                        },
-                        "annotations": []
-                      }
-                    },
-                    "annotations": []
-                  }
-                },
-                "sink": {
-                  "type": "DataWarehouseSink",
-                  "tableOption": "autoCreate",
-                  "allowCopyCommand": true,
-                  "copyCommandSettings": {},
-                  "datasetSettings": {
-                    "type": "DataWarehouseTable",
-                    "typeProperties": {
-                      "schema": "dbo",
-                      "table": {
-                        "value": "@item().destination.table",
-                        "type": "Expression"
-                      }
-                    },
-                    "schema": [],
-                    "linkedService": {
-                      "name": "WH_Report",
-                      "properties": {
-                        "type": "DataWarehouse",
-                        "typeProperties": {
-                          "artifactId": "c760ad98-d6a8-4510-97c1-d3ad75c33192",
-                          "endpoint": "4sjwxw63n3pezhjh3drmlajhvu-ntztu4fy2cjutjg5jjj7cfsis4.datawarehouse.fabric.microsoft.com",
-                          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897"
-                        },
-                        "annotations": []
-                      }
-                    },
-                    "annotations": []
-                  }
-                },
-                "translator": {
-                  "value": "@item().copyActivity.translator",
-                  "type": "Expression"
-                },
-                "enableStaging": true
-              },
-              "policy": {
-                "timeout": "0.12:00:00",
-                "retry": 0,
-                "retryIntervalInSeconds": 30,
-                "secureInput": false,
-                "secureOutput": false
-              },
-              "name": "Copy_m4l",
-              "dependsOn": []
-            }
-          ]
-        },
         "name": "ForEach_m4l",
+        "type": "ForEach",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
         "dependsOn": [
           {
             "activity": "Silver to Gold",
@@ -268,7 +195,90 @@
               "Succeeded"
             ]
           }
-        ]
+        ],
+        "typeProperties": {
+          "items": {
+            "value": "@pipeline().parameters.cw_items_m4l",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "name": "Copy_m4l",
+              "type": "Copy",
+              "dependsOn": [],
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureOutput": false,
+                "secureInput": false
+              },
+              "typeProperties": {
+                "source": {
+                  "type": "LakehouseTableSource",
+                  "datasetSettings": {
+                    "annotations": [],
+                    "linkedService": {
+                      "name": "LH_Gold",
+                      "properties": {
+                        "annotations": [],
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897",
+                          "artifactId": "f42e90a7-cd42-4935-b59c-bdc5425d39c3",
+                          "rootFolder": "Tables"
+                        }
+                      }
+                    },
+                    "type": "LakehouseTable",
+                    "schema": [],
+                    "typeProperties": {
+                      "table": {
+                        "value": "@item().source.table",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                },
+                "sink": {
+                  "type": "DataWarehouseSink",
+                  "allowCopyCommand": true,
+                  "copyCommandSettings": {},
+                  "tableOption": "autoCreate",
+                  "datasetSettings": {
+                    "annotations": [],
+                    "linkedService": {
+                      "name": "WH_Report",
+                      "properties": {
+                        "annotations": [],
+                        "type": "DataWarehouse",
+                        "typeProperties": {
+                          "endpoint": "4sjwxw63n3pezhjh3drmlajhvu-ntztu4fy2cjutjg5jjj7cfsis4.datawarehouse.fabric.microsoft.com",
+                          "artifactId": "c760ad98-d6a8-4510-97c1-d3ad75c33192",
+                          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897"
+                        }
+                      }
+                    },
+                    "type": "DataWarehouseTable",
+                    "schema": [],
+                    "typeProperties": {
+                      "schema": "dbo",
+                      "table": {
+                        "value": "@item().destination.table",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                },
+                "enableStaging": true,
+                "translator": {
+                  "value": "@item().copyActivity.translator",
+                  "type": "Expression"
+                }
+              }
+            }
+          ]
+        }
       }
     ],
     "parameters": {
