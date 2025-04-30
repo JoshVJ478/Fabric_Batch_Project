@@ -1,4 +1,4 @@
-## 🚀 RetailNova Data Pipeline With Fabric
+# 🚀 RetailNova Data Pipeline With Fabric
 This project demonstrates the construction of an end-to-end data pipeline in Microsoft Fabric, designed to simulate the ingestion, transformation, and preparation for analysis of sales data from an e-commerce system (**RetailNova**).
 Here you will find the necessary resources to understand and replicate this data flow, from a simulated transactional source to a dimensional model ready for BI."
 
