@@ -3,10 +3,15 @@
 This repository contains the scripts and configuration needed to simulate a local transactional data source (OLTP) and process it through an ingestion and transformation pipeline in Microsoft Fabric, building a dimensional model in a Lakehouse.
 The project simulates a sales data flow from an e-commerce system (RetailNova) and demonstrates an incremental loading approach using high-watermarks in Microsoft Fabric.
 
+> [!IMPORTANT]
+> * **Sync** your Fabric workspace to the **"RetailNova_Project"** folder.
+> * **Download** the **"Resources"** folder.
+> * **Save** the "generate_and_ingest_local_sql.py" file.
+
 ## 📦 Repository Contents
-* generate_and_ingest_local_sql.py: Python script to generate simulated sales data and load it into a local SQL Server database. This script also creates the simulated OLTP structure and a temporary staging table.
-* .env.example: An example file showing the structure of the .env file needed to configure the connection to local SQL Server. This file does NOT contain sensitive credentials.
-* .gitignore: File to specify which files and folders Git should ignore, including the actual .env file.
+* **generate_and_ingest_local_sql.py**: Python script to generate simulated sales data and load it into a local SQL Server database. This script also creates the simulated OLTP structure and a temporary staging table.
+* **.env.example**: An example file showing the structure of the .env file needed to configure the connection to local SQL Server. This file does NOT contain sensitive credentials.
+* **.gitignore**: File to specify which files and folders Git should ignore, including the actual .env file.
 * Additional SQL scripts (if any, list them here, although the Python script already includes them internally).
 * Fabric pipeline configuration files or exports (if included).
 
@@ -35,28 +40,34 @@ Follow these steps to set up the environment:
 * Download the generate_and_ingest_local_sql.py and .env.example files from this repository.
 * Create your .env file: Make a copy of the .env.example file and rename it to .env in the same folder as generate_and_ingest_local_sql.py.
 * Edit your .env file: Open the .env file and update the values with your local SQL Server connection details:
-
-       SQL_SERVER_NAME=. # Replace with your local SQL server name or IP
-       SQL_DATABASE_NAME=RetailNova
-       SQL_USERNAME=sa # Replace with your SQL user
-       SQL_PASSWORD=YourSecurePassword # Replace with your SQL password
-       SQL_DRIVER={ODBC Driver 17 for SQL Server} # Replace with the exact name of your installed ODBC driver
+  
+```SQL
+  SQL_SERVER_NAME=. # Replace with your local SQL server name or IP
+  SQL_DATABASE_NAME=RetailNova
+  SQL_USERNAME=sa # Replace with your SQL user
+  SQL_PASSWORD=YourSecurePassword # Replace with your SQL password
+  SQL_DRIVER={ODBC Driver 17 for SQL Server} # Replace with the exact name of your installed ODBC driver
+```
 
 * Configure .gitignore: Make sure your .gitignore file (in the root of your Git repository) includes the line .env to prevent accidentally uploading your sensitive credentials. A basic .gitignore for this project might look like this:
 
 ### Files and folders to ignore
+```python
        .env 
        __pycache__/ 
        *.pyc
+```
 
 * Save both files (.env and .gitignore).
+  
+> [!NOTE]
+> **Important Note:** To allow the initial synchronization to complete without errors related to external data source connections, the activities within the Full_Process pipeline in this repository have been intentionally disabled. This facilitates import but will require an additional configuration step.
 
-**Important Note:** To allow the initial synchronization to complete without errors related to external data source connections, the activities within the Full_Process pipeline in this repository have been intentionally disabled. This facilitates import but will require an additional configuration step.
 ### 3. ☁️ Microsoft Fabric Setup
 * Access your Microsoft Fabric environment.
 * Sync the Repository with your Fabric Workspace:
   * In the workspace settings, go to Git integration.
-  * Connect your workspace to the cloned repository, selecting the appropriate branch and folder. Start the synchronization process (Sync). Upon synchronization, the Lakehouses (LH_Bronze, LH_Silver, LH_Gold), the Pipeline (Full_Process), and the Notebooks (ETL_Bronze_to_Silver, ETL_Silver_to_Gold) defined in the repository will be automatically created in your workspace.
+  * Connect your workspace to the cloned repository, selecting the main branch and the **"RetailNova_Project"** folder. Start the synchronization process (Sync). Upon synchronization, the Lakehouses (LH_Bronze, LH_Silver, LH_Gold), the Pipeline (Full_Process), and the Notebooks (ETL_Bronze_to_Silver, ETL_Silver_to_Gold) defined in the repository will be automatically created in your workspace.
 Important Note: To allow the initial synchronization to complete without errors related to external data source connections, the activities within the Full_Process pipeline in this repository have been **intentionally disabled**. This facilitates import but will require an additional configuration step.
 
 ### ➡️ Full_Process Pipeline Configuration
@@ -81,15 +92,16 @@ This activity is used to get the list of tables in the OLTP schema of your local
     * **Use query**: Select the Query option.
     * **Query**: Enter the following SQL query to get the names of the tables in the OLTP schema.
 
-              SELECT SCHEMA_NAME(t.schema_id) AS schema_name,
-              t.name as table_name
-              FROM sys.tables t
-              WHERE SCHEMA_NAME(t.schema_id) = 'OLTP' 
-              ORDER BY table_name
+```SQL
+SELECT SCHEMA_NAME(t.schema_id) AS schema_name,
+ t.name as table_name
+FROM sys.tables t
+WHERE SCHEMA_NAME(t.schema_id) = 'OLTP' 
+ORDER BY table_name
+```
 
-
-    * **First row only**: Make sure this is **unchecked** (you need to get all tables, not just the first one).
-    * **Timeout**: Leave the default value or adjust it if your queries take a long time.
+   * **First row only**: Make sure this is **unchecked** (you need to get all tables, not just the first one).
+   * **Timeout**: Leave the default value or adjust it if your queries take a long time.
 
 #### Activity: ForEach (Iterate over OLTP Tables)
 This activity iterates over the output of the Lookup activity (the list of OLTP tables) to process each table individually.
@@ -100,8 +112,9 @@ This activity iterates over the output of the Lookup activity (the list of OLTP 
 * **Settings** tab: 
   * **Sequential**: Check this box ✅ if you want the iterations (the copy of each table) to run one after another. Uncheck it if you want them to run in parallel (can be faster but uses more resources). For this simulation, processing sequentially might be easier to debug. \
   * **Items**: Click in the field and select **Add dynamic content**. Here you must select the **output of the Lookup activity** that provides the list of tables. The dynamic expression should look something like
-    
-           @activity('YourLookupActivityName').output.value.
+    ```python
+    @activity('YourLookupActivityName').output.value.
+    ```
     
     Make sure to replace **'YourLookupActivityName'** with the exact name you gave your Lookup activity in the pipeline. This tells the ForEach to iterate over each object (each table) in the list of results from the Lookup query.
 * Inside the **ForEach activity**, you will see the **Copy Data** activity that will run for each table. Double-click on the **ForEach** to enter and configure the internal activities.
@@ -118,17 +131,19 @@ This activity runs for each OLTP table found by the Lookup and copies the data f
   * **Database**: Select or type the name of your database: RetailNova.
   * **Use query**: Select the Table option.
   * **Table**: Click in the field and select **Add dynamic content**. Here you will use the ForEach variables that contain the current table's schema and name. It should look something like:
+  ```python
+    @item().schema_name for the schema and @item().table_name
+  ```
 
-            @item().schema_name for the schema and @item().table_name
-
-    for the table name. This makes the activity dynamically read the current table in the ForEach iteration. Make sure to check the "Enter manually" box if needed to enter the dynamic expressions.
+for the table name. This makes the activity dynamically read the current table in the ForEach iteration. Make sure to check the "Enter manually" box if needed to enter the dynamic expressions.
   * **Advanced**: Review advanced options if you need specific configuration (e.g., Isolation level, Command timeout).
 * **Destination** tab:
   * **Connection**: Select your destination Lakehouse: LH_Bronze.
   * **Root folder**: Select the Tables option. This indicates that the data will be written to the managed tables section of the Lakehouse, creating Delta tables.
   * **Table**: Click in the field and select Add dynamic content. Similar to the source, you will use the ForEach variable to dynamically name the destination Delta table:
-    
+    ```python
            @item().table_name
+    ```
     This will create or append data to a Delta table in Bronze with the same name as the source OLTP table.
   * **Table action**: Select the Overwrite option. This will overwrite the destination Delta table with the data from the current batch in each execution for this table.
   * **Enable partitions**: Make sure this is unchecked.
@@ -163,12 +178,14 @@ This activity iterates over a list of items (defined by a pipeline parameter) an
   * **Sequential**: Make sure this is unchecked.
   * **Batch count**: Leave blank or adjust if you need to control the number of parallel iterations.
   * **Items**: Click in the field and select Add dynamic content. The dynamic expression should be
-   
-           @pipeline().parameters.cw_items_m4l
-    This indicates that the ForEach will iterate over the items provided by the pipeline parameter
-
-           cw_items_m4l
-    This parameter likely contains a list of table names or paths to copy from Gold to the Warehouse.
+```python   
+@pipeline().parameters.cw_items_m4l
+```
+   This indicates that the ForEach will iterate over the items provided by the pipeline parameter
+```python
+cw_items_m4l
+```
+   This parameter likely contains a list of table names or paths to copy from Gold to the Warehouse.
 * Inside the ForEach_m4l activity, you will see the Copy Data activity that will run for each item. Double-click on the ForEach to enter and configure the internal activity.
   
 #### Activity: Copy_m4l (Inside ForEach_m4l - Gold to Warehouse)
@@ -181,26 +198,30 @@ This activity runs for each item provided by the ForEach_m4l and copies the data
   * **Connection**: Select your source Lakehouse: LH_Gold.
   * **Root folder**: Select the Tables option.
   * **Table**: Click in the field and select Add dynamic content. The dynamic expression must be
-  
-           @item().source.table
-    This indicates that the activity will read the table specified in the **source.table** property of the current item the **ForEach_m4l** is iterating over.
+```python  
+@item().source.table
+```
+   This indicates that the activity will read the table specified in the **source.table** property of the current item the **ForEach_m4l** is iterating over.
 * **Destination** tab:
   * **Connection**: Select your destination Warehouse: WH_Report.
   * **Table option**: Select Auto create table. This indicates that Fabric will automatically create the destination table in the Warehouse if it doesn't exist, based on the schema of the source data.
   * **Table**: In the first field, type the destination schema, which is **dbo** according to the screenshot. In the second field, click and select **Add dynamic content**. The dynamic expression must be
-
-           @item().destination.table
+  ```python
+  @item().destination.table
+  ```
     This indicates that the destination table name in the Warehouse will be taken from the destination.table property of the current item the **ForEach_m4l** is iterating over.
   * **Advanced**: In the advanced options, in the **"Pre-copy script"** field, enter the following script:
-  
-              TRUNCATE TABLE @{item().destination.table};
+  ```python
+  TRUNCATE TABLE @{item().destination.table};
+  ```
 
 This script will execute in the destination Warehouse **before** the data copy starts for the current table in the ForEach iteration. It ensures that the destination table is completely emptied before loading the new data from Gold.Review other advanced options if you need specific configuration (e.g., Write behavior Insert, Upsert, Overwrite). The combination of "Auto create table" and "Pre-copy script" with TRUNCATE achieves a full "overwrite" effect for the table in the Warehouse with the data from Gold in each execution for that table.
 * **Mapping** tab:
   * **Mapping**: This field has the dynamic expression
-    
-           @item().copyActivity.translator
-    This indicates that the column mapping between the source (table in LH_Gold) and the destination (table in WH_Report) is dynamically defined using the copyActivity.translator property of the current item the ForEach_m4l is iterating over. This is useful if you need custom mappings for each table being copied within the ForEach.
+```python
+@item().copyActivity.translator
+```
+This indicates that the column mapping between the source (table in LH_Gold) and the destination (table in WH_Report) is dynamically defined using the copyActivity.translator property of the current item the ForEach_m4l is iterating over. This is useful if you need custom mappings for each table being copied within the ForEach.
 After configuring all pipeline activities and enabling them, save the pipeline. It is now ready to be executed.
 
 ### 📓 Notebook Configuration
@@ -210,14 +231,17 @@ The "Bronze to Silver" and "Silver to Gold" Notebooks are key components of the 
 * **Location**: This Notebook must exist in your Fabric Workspace (e.g., RetailNova_Batch).
 * **Specific Configuration**:
   * **Workspace Name**: Inside the Notebook's PySpark code, there is a variable that defines the workspace name. **You must change this variable to exactly match the name of your Microsoft Fabric workspace where you imported the repository content.** Look for the line similar to:
-  
-         workspace_name = "RetailNova_Batchv2" # **ADJUST THIS TO YOUR ACTUAL WORKSPACE NAME**
+```python
+workspace_name = "RetailNova_Batchv2" # **ADJUST THIS TO YOUR ACTUAL WORKSPACE NAME**
+```
 
 Modify "RetailNova_Batchv2" with your workspace name.
 * **Connections (Attached Lakehouses)**: For the Notebook to be able to read from and write to the Lakehouses, you must ensure that LH_Bronze and LH_Silver are **attached** to this Notebook in its configuration. This is done in the Notebook's user interface, in the Lakehouses section. The Lakehouse names (LH_Bronze, LH_Silver) are already defined in the Notebook code and should match the ones you created if you followed the previous steps.
 * **Data Paths**: Within the Notebook's PySpark code, ABFS (Azure Blob File System) paths are used to reference the Delta tables in the Lakehouses. These paths have the format
+```python
+abfss://<workspace_name>@onelake.dfs.fabric.microsoft.com/<lakehouse_name>.Lakehouse/Tables/<table_name>
+```
 
-       abfss://<workspace_name>@onelake.dfs.fabric.microsoft.com/<lakehouse_name>.Lakehouse/Tables/<table_name>
   The Notebook uses the workspace_name variable and the Lakehouse names to build these paths dynamically. That's why it's crucial to only adjust the workspace name.
 * **High-Watermark**: The Notebook manages a high-watermark file (bronze_orders_high_watermark) to track the last processed order date. This file is saved in the Files/HighWatermark/ section of the source Lakehouse (LH_Bronze). The Notebook reads this file at the beginning to know where to start processing from and updates it at the end with the maximum date of the processed data.
 * **Parameters**: If the Notebook required external inputs (like a specific table name or start date), parameters would be defined in its cells (using %param) and assigned static or dynamic values in the pipeline's Notebook activity. In this project, the Notebook reads paths internally, so it typically doesn't require input parameters.
@@ -226,8 +250,9 @@ Modify "RetailNova_Batchv2" with your workspace name.
 * **Location**: This Notebook must exist in your Fabric Workspace (e.g., RetailNova_Batch).
 * **Specific Configuration**:
   * Workspace Name: Similar to the previous Notebook, you must adjust the workspace_name variable within the PySpark code to match your Microsoft Fabric workspace name. Look for the line similar to:
-  
-          workspace_name = "RetailNova_Batchv2" # **ADJUST THIS TO YOUR ACTUAL WORKSPACE NAME**
+```python
+workspace_name = "RetailNova_Batchv2" # **ADJUST THIS TO YOUR ACTUAL WORKSPACE NAME**
+```
 
 Modify "RetailNova_Batchv2" with your workspace name.
   * **Connections (Attached Lakehouses)**: You must ensure that LH_Silver and LH_Gold are attached to this Notebook in its configuration. The Lakehouse names (LH_Silver, LH_Gold) are already defined in the Notebook code.
@@ -242,8 +267,9 @@ Follow these steps to run the complete flow:
   * Open a terminal or Command Prompt on your local machine, or use a Python code interpreter like Visual Studio Code, PyCharm, etc.
   * Navigate to the folder where you saved generate_and_ingest_local_sql.py and your .env file.
   * Run the script:
-
-              python generate_and_ingest_local_sql.py
+```python
+python generate_and_ingest_local_sql.py
+```
 
   * Observe the script's output to confirm that it connected to SQL Server (reading credentials from .env), generated data, created/cleaned OLTP tables, and populated the OLTP tables without errors.
   * You can run this script multiple times to simulate the arrival of new data batches.
@@ -257,8 +283,9 @@ The pipeline will connect to your local SQL Server (via the gateway configured i
 * The Python script generates timestamps for orders using the current UTC time, ensuring that new data is always later than previous watermarks in Fabric.
 * The "Bronze to Silver" and "Silver to Gold" Notebooks manage high-watermark files (bronze_orders_high_watermark and silver_sales_high_watermark) in the Files/HighWatermark folder of their respective source Lakehouses (primarily in LH_Bronze and LH_Gold). These files record the timestamp of the last processed data, allowing subsequent runs to process only the most recent data.
 * The load from Gold to Warehouse via the *ForEach_m4l/Copy_m4l* implements a **full overwrite** strategy for the destination tables in the Warehouse. This is achieved by using the **"Pre-copy script"** configured in the **"Destination"** tab of the Copy Data activity. This script executes
-
-         TRUNCATE TABLE @{item().destination.table};
+```python
+TRUNCATE TABLE @{item().destination.table};
+```
   before each data copy operation, deleting all existing data in the destination Warehouse table before loading the current data from the Gold layer. Additionally, the **"Auto create table"** option is enabled, which allows the destination table to be automatically created in the Warehouse if it doesn't exist, based on the schema of the source table in Gold. This approach ensures that the tables in the Warehouse always reflect the most recent state of the corresponding tables in the Gold layer.
 
 ### 📊 Integration with the Semantic Model (Analysis Layer)
