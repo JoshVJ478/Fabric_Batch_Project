@@ -1,0 +1,34 @@
+table DimStore
+	lineageTag: 8ca67c4c-d221-4e01-894a-485e639e8868
+	sourceLineageTag: [dbo].[DimStore]
+
+	column StoreKey
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: dac41011-993e-4183-ab63-410133d28ea4
+		sourceLineageTag: StoreKey
+		summarizeBy: none
+		sourceColumn: StoreKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column CityName
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 8c5dd8d3-43cb-4846-8d08-ac04eaea379e
+		sourceLineageTag: CityName
+		summarizeBy: none
+		sourceColumn: CityName
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimStore = entity
+		mode: directLake
+		source
+			entityName: DimStore
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	annotation PBI_ResultType = Table
+
