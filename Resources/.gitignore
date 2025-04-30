@@ -1,4 +1,0 @@
-# Archivos y carpetas a ignorar
-.env
-__pycache__/
-*.pyc
