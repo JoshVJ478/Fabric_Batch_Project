@@ -55,7 +55,7 @@ from delta.tables import DeltaTable
 # Asegúrate de que estos nombres de Lakehouse y la ruta ABFS sean correctos para tu entorno.
 silver_lakehouse_name = "LH_Silver" # Nombre del Lakehouse para la capa Silver (Origen)
 gold_lakehouse_name = "LH_Gold"   # Nombre del Lakehouse para la capa Gold (Destino)
-workspace_name = "RetailNova_Batchv2" # **¡CORREGIDO! Nombre del workspace correcto: RetailNova_workflow**
+workspace_name = "RetailNova_Batch" # **¡CORREGIDO! Nombre del workspace correcto: RetailNova_workflow**
 
 # Construir las rutas base ABFS para los Lakehouses Silver y Gold
 silver_layer_abfs_base_path = f"abfss://{workspace_name}@onelake.dfs.fabric.microsoft.com/{silver_lakehouse_name}.Lakehouse/Tables/"
@@ -383,22 +383,16 @@ try:
         df_dates_to_add_with_attrs = df_dates_to_add.select(
             col("OrderDate").alias("Date"),
             date_format("OrderDate", "yyyyMMdd").cast(IntegerType()).alias("DateKey"), # Clave subrogada simple:YYYYMMDD
-            date_format("OrderDate", "dd-MM-yyyy").alias("FullDate"), # <-- CORREGIDO: Formato dd-MM-yyyy
+            date_format("OrderDate", "dd-MM-yyyy").alias("FullDate"), 
             date_format("OrderDate", "MM").alias("Month"),
             date_format("OrderDate", "MMMM").alias("MonthName"),
             date_format("OrderDate", "yyyy").alias("Year"),
-            # --- CORRECCIÓN AQUÍ: Usar dayofweek y ajustar para 1=Monday ---
-            # dayofweek() returns 1=Sunday, 7=Saturday. We want 1=Monday, 7=Sunday.
-            # (dayofweek + 5) % 7 + 1 maps 1->7, 2->1, 3->2, ..., 7->6
             ((dayofweek(col("OrderDate")) + 5) % 7 + 1).alias("DayOfWeek"),
-            # --- FIN CORRECCIÓN ---
             date_format("OrderDate", "EEEE").alias("DayOfWeekName"),
             date_format("OrderDate", "d").alias("DayOfMonth"),
             date_format("OrderDate", "D").alias("DayOfYear"),
             date_format("OrderDate", "q").alias("Quarter"),
-            # --- CORRECCIÓN AQUÍ: Usar weekofyear function ---
-            weekofyear(col("OrderDate")).alias("WeekOfYear") # Semana del año (ISO 8601)
-            # --- FIN CORRECCIÓN ---
+            weekofyear(col("OrderDate")).alias("WeekOfYear") # Semana del año (ISO 8601)  
         )
 
         # Escribir/añadir los nuevos fechas a la tabla DimDate existente
@@ -415,22 +409,16 @@ except Exception as e:
     df_dimdate_new = df_new_dates.select(
         col("OrderDate").alias("Date"),
         date_format("OrderDate", "yyyyMMdd").cast(IntegerType()).alias("DateKey"), # Clave subrogada simple:YYYYMMDD
-        date_format("OrderDate", "dd-MM-yyyy").alias("FullDate"), # <-- CORREGIDO: Formato dd-MM-yyyy
+        date_format("OrderDate", "dd-MM-yyyy").alias("FullDate"), 
         date_format("OrderDate", "MM").alias("Month"),
         date_format("OrderDate", "MMMM").alias("MonthName"),
         date_format("OrderDate", "yyyy").alias("Year"),
-        # --- CORRECCIÓN AQUÍ: Usar dayofweek y ajustar para 1=Monday ---
-        # dayofweek() returns 1=Sunday, 7=Saturday. We want 1=Monday, 7=Sunday.
-        # (dayofweek + 5) % 7 + 1 maps 1->7, 2->1, 3->2, ..., 7->6
         ((dayofweek(col("OrderDate")) + 5) % 7 + 1).alias("DayOfWeek"),
-        # --- FIN CORRECCIÓN ---
         date_format("OrderDate", "EEEE").alias("DayOfWeekName"),
         date_format("OrderDate", "d").alias("DayOfMonth"),
         date_format("OrderDate", "D").alias("DayOfYear"),
         date_format("OrderDate", "q").alias("Quarter"),
-        # --- CORRECCIÓN AQUÍ: Usar weekofyear function ---
         weekofyear(col("OrderDate")).alias("WeekOfYear") # Semana del año (ISO 8601)
-        # --- FIN CORRECCIÓN ---
     )
 
     # --- DEBUG: Añadido Try/Except específico para la escritura inicial ---
@@ -521,17 +509,9 @@ except Exception as e:
 
 print("--- DEBUG: Proceso de Tablas de Dimensión completado.")
 
-
 # COMMAND ----------
 
-# --- 5. Procesar y Cargar DimDate ---
-# Este paso se movió arriba (paso 4) para mantener todas las dimensiones juntas.
-# El código de DimDate ya está en el paso 4.
-
-
-# COMMAND ----------
-
-# --- 6. Unir datos incrementales de Silver con Tablas de Dimensión para obtener Claves Subrogadas ---
+# --- 5. Unir datos incrementales de Silver con Tablas de Dimensión para obtener Claves Subrogadas ---
 print("\n--- DEBUG: Uniendo datos de Silver con Dimensiones para obtener Claves Subrogadas ---")
 
 # Leer las tablas de dimensión completas (incluyendo los registros recién añadidos)
@@ -605,7 +585,7 @@ df_factsales_new.printSchema()
 
 # COMMAND ----------
 
-# --- 7. Escribir datos incrementales en la Capa Gold (Tabla de Hechos FactSales) ---
+# --- 6. Escribir datos incrementales en la Capa Gold (Tabla de Hechos FactSales) ---
 print(f"\n--- DEBUG: Escribiendo datos incrementales en la tabla Delta '{gold_salesfact_path}' en el Lakehouse '{gold_lakehouse_name}' usando ruta ABFS... ---")
 
 # Escribir el DataFrame incremental en la tabla Delta FactSales en Gold.
@@ -622,7 +602,7 @@ print(f"--- DEBUG: Datos incrementales escritos exitosamente en la tabla FactSal
 
 # COMMAND ----------
 
-# --- 8. Actualizar la marca de agua (high-watermark) para Silver a Gold ---
+# --- 7. Actualizar la marca de agua (high-watermark) para Silver a Gold ---
 # Actualizar la marca de agua (high-watermark) con la fecha máxima de ProcessingTimestamp de los datos que acabamos de procesar
 # Esto se hace DESPUÉS de que los datos han sido procesados y escritos a Gold.
 print("\n--- DEBUG: Actualizando la marca de agua (Silver a Gold) con la fecha máxima de procesamiento de los datos recién cargados... ---")
@@ -632,7 +612,7 @@ print("\n--- DEBUG: Actualizando la marca de agua (Silver a Gold) con la fecha m
 new_max_processing_timestamp_gold_row = df_new_silver_data.select(max("ProcessingTimestamp")).collect()[0]
 
 if new_max_processing_timestamp_gold_row is not None and new_max_processing_timestamp_gold_row[0] is not None:
-    new_max_processing_timestamp_gold = new_max_processing_timestamp_gold_row[0] # <-- CORREGIDO: Acceder al valor
+    new_max_processing_timestamp_gold = new_max_processing_timestamp_gold_row[0]
     df_new_high_watermark_gold = spark.createDataFrame([(new_max_processing_timestamp_gold,)], ["LastProcessedDate"]) \
                                      .withColumn("LastProcessedDate", col("LastProcessedDate").cast(TimestampType()))
 

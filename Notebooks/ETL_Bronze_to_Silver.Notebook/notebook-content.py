@@ -14,6 +14,9 @@
 # META       "known_lakehouses": [
 # META         {
 # META           "id": "f8b1b017-3b83-4294-a9ea-7fc47416e097"
+# META         },
+# META         {
+# META           "id": "760d4d76-3ae4-4e90-a44b-ef4921c67dde"
 # META         }
 # META       ]
 # META     }
@@ -42,12 +45,10 @@ from notebookutils import mssparkutils
 # COMMAND ----------
 
 # Definir las rutas a las capas Bronze y Silver en OneLake
-# ¡CORREGIDO! Las tablas de la capa Bronze están en LH_Bronze.
-# ¡CORREGIDO! La tabla de la capa Silver está en LH_Silver.
 # Asegúrate de que estos nombres de Lakehouse y la ruta ABFS sean correctos para tu entorno.
 bronze_lakehouse_name = "LH_Bronze" # Nombre del Lakehouse para la capa Bronze
 silver_lakehouse_name = "LH_Silver" # Nombre del Lakehouse para la capa Silver
-workspace_name = "RetailNova_Batchv2" # **AJUSTA ESTO A TU NOMBRE DE WORKSPACE REAL**
+workspace_name = "RetailNova_Batch" # **AJUSTA ESTO A TU NOMBRE DE WORKSPACE REAL**
 
 # Construir las rutas base ABFS para los Lakehouses Bronze y Silver
 bronze_layer_abfs_base_path = f"abfss://{workspace_name}@onelake.dfs.fabric.microsoft.com/{bronze_lakehouse_name}.Lakehouse/Tables/"
@@ -64,7 +65,6 @@ bronze_products_path = bronze_layer_abfs_base_path + "Products"
 silver_salesorderlines_path = silver_layer_abfs_base_path + "SalesOrderLines_Silver"
 
 # Definir la ruta para el archivo de marca de agua (high-watermark)
-# ¡CORREGIDO! El archivo de marca de agua también debe estar en el Lakehouse Bronze (LH_Bronze)
 # para que esté cerca de los datos de origen que controla.
 # Lo guardaremos en la sección Files/HighWatermark dentro de LH_Bronze.
 high_watermark_abfs_path = f"abfss://{workspace_name}@onelake.dfs.fabric.microsoft.com/{bronze_lakehouse_name}.Lakehouse/Files/HighWatermark/bronze_orders_high_watermark"
@@ -302,5 +302,7 @@ print("\nProceso Bronze a Silver completado exitosamente.")
 
 # META {
 # META   "language": "python",
-# META   "language_group": "synapse_pyspark"
+# META   "language_group": "synapse_pyspark",
+# META   "frozen": false,
+# META   "editable": true
 # META }
