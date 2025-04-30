@@ -58,4 +58,3 @@ As mentioned earlier, the project has areas for further evolution:
 *	**Integration of More Sources**: Extend the pipeline to include data from marketing, inventory, logistics, etc., for more comprehensive analysis.
 *	**Continuous Optimization**: Tune the performance of transformations and the structure of Delta tables as data volume grows.
 In conclusion, the RetailNova Data Pipeline project is a practical demonstration of how to build a modern and scalable data pipeline in Microsoft Fabric, solving the challenges of integrating and transforming transactional data to drive business analytics.
-
