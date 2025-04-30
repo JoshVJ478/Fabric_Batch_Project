@@ -27,6 +27,10 @@
 
 # # Transformation
 
+# MARKDOWN ********************
+
+# ## Install Library
+
 # CELL ********************
 
 # Databricks notebook source
@@ -46,6 +50,18 @@ from notebookutils import mssparkutils
 # Importar DeltaTable para operaciones MERGE
 from delta.tables import DeltaTable
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Defining path
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -91,6 +107,20 @@ print(f"Gold DimCategory (Destino): {gold_dimcategory_path}")
 print(f"High-Watermark File (Gold): {high_watermark_gold_abfs_path}")
 
 
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Read High Watermark
+
+# CELL ********************
+
 # COMMAND ----------
 
 # --- 1. Leer la marca de agua (high-watermark) para Silver a Gold ---
@@ -119,6 +149,18 @@ except Exception as e:
 
 print(f"--- DEBUG: Usando marca de agua (Silver a Gold): {last_processed_timestamp_gold} para filtrar datos de Silver. ---")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Read Incremental data from Silver
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -147,6 +189,18 @@ df_new_silver_data = df_silver_data.filter(col("ProcessingTimestamp") > last_pro
 
 print(f"--- DEBUG: Conteo de nuevos registros en Silver después de filtrar por marca de agua: {df_new_silver_data.count()} ---")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Processing data to Gold if new data is available
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -175,6 +229,18 @@ if df_new_silver_data.count() == 0:
 
 print(f"Se encontraron {df_new_silver_data.count()} nuevos registros en Silver para procesar a Gold.")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Processing and load Dimensional Tables
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -509,6 +575,19 @@ except Exception as e:
 
 print("--- DEBUG: Proceso de Tablas de Dimensión completado.")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Unite Incremental Data from Silver
+
+# CELL ********************
+
 # COMMAND ----------
 
 # --- 5. Unir datos incrementales de Silver con Tablas de Dimensión para obtener Claves Subrogadas ---
@@ -582,6 +661,18 @@ df_factsales_new = df_new_silver_data.alias("silver") \
 print("\n--- DEBUG: Esquema del DataFrame Resultante (FactSales) ---")
 df_factsales_new.printSchema()
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Write Incremental Data to Gold Layer
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -599,6 +690,18 @@ df_factsales_new.write \
 
 print(f"--- DEBUG: Datos incrementales escritos exitosamente en la tabla FactSales en Gold usando ruta ABFS en '{gold_salesfact_path}'. ---")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Update High Watermark
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -629,7 +732,6 @@ else:
      print("Advertencia: No se encontraron nuevas fechas máximas de procesamiento válidas en los datos procesados para actualizar el High Watermark (Silver a Gold).")
 
 print("\n--- Proceso Silver a Gold COMPLETADO ---")
-
 
 # METADATA ********************
 

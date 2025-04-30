@@ -27,6 +27,10 @@
 
 # # Transformation
 
+# MARKDOWN ********************
+
+# ## Import Library
+
 # CELL ********************
 
 # Databricks notebook source
@@ -41,6 +45,19 @@ import sys
 
 # Importar mssparkutils para operaciones del sistema de archivos en Fabric
 from notebookutils import mssparkutils
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Defining Path 
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -78,6 +95,18 @@ print(f"Bronze Products: {bronze_products_path}")
 print(f"Silver SalesOrderLines: {silver_salesorderlines_path}")
 print(f"High-Watermark File: {high_watermark_abfs_path}")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Read Files
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -122,6 +151,18 @@ df_orderitems_bronze.printSchema()
 df_customers_bronze.printSchema()
 df_products_bronze.printSchema()
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Read High Watermak
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -150,6 +191,18 @@ except Exception as e:
 
 print(f"--- DEBUG: Usando marca de agua: {last_processed_date} para filtrar datos de Bronze. ---")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Filtering New Data
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -172,6 +225,18 @@ df_new_orderitems = df_orderitems_bronze.alias("oi").filter(col("oi.OrderID").is
 print(f"--- DEBUG: Conteo de nuevas órdenes después de filtrar por marca de agua: {df_new_orders.count()} ---")
 print(f"--- DEBUG: Conteo de nuevos ítems de orden después de filtrar por OrderID: {df_new_orderitems.count()} ---")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Processing data to Silver layer
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -200,6 +265,18 @@ if df_new_orders.count() == 0:
 
 print(f"Se encontraron {df_new_orders.count()} nuevas órdenes para procesar.")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Join, Clean and Tranform
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -262,6 +339,18 @@ df_silver = df_new_orderitems.alias("oi") \
 print("\n--- DEBUG: Esquema del DataFrame Resultante (Capa Silver) ---")
 df_silver.printSchema()
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Write processed data into Silver
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -273,6 +362,18 @@ df_silver.write.format("delta").mode("append").save(silver_salesorderlines_path)
 
 print("--- DEBUG: Datos escritos a la capa Silver. ---")
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# ## Update High Watermark
+
+# CELL ********************
 
 # COMMAND ----------
 
@@ -295,8 +396,6 @@ except Exception as update_e:
 
 
 print("\nProceso Bronze a Silver completado exitosamente.")
-
-
 
 # METADATA ********************
 
