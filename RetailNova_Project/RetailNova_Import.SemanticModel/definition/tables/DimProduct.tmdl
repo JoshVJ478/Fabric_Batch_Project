@@ -1,0 +1,54 @@
+table DimProduct
+	lineageTag: 694894a5-c50e-4310-9b35-c1df80ccbdf9
+
+	column ProductKey
+		dataType: int64
+		formatString: 0
+		lineageTag: cecbd41f-8188-4c86-ba3d-0348dfee60c3
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductID_OLTP
+		dataType: int64
+		formatString: 0
+		lineageTag: 01cc2595-f5b0-41ec-9de3-451f4e531153
+		summarizeBy: none
+		sourceColumn: ProductID_OLTP
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductName
+		dataType: string
+		lineageTag: 43e988cd-8862-462d-9e02-594f7c4b4ac1
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCategory
+		dataType: string
+		lineageTag: 23364950-ceee-47c1-b3a6-b09eb32781a9
+		summarizeBy: none
+		sourceColumn: ProductCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductBrand
+		dataType: string
+		lineageTag: d6d83bc0-6cce-47fe-86a3-22d79873c063
+		summarizeBy: none
+		sourceColumn: ProductBrand
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimProduct = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("4sjwxw63n3pezhjh3drmlajhvu-fzrdgcitdowu7ggpzleyf6jixe.datawarehouse.fabric.microsoft.com", "WH_Report"),
+				    dbo_DimProduct = Source{[Schema="dbo",Item="DimProduct"]}[Data]
+				in
+				    dbo_DimProduct
+
