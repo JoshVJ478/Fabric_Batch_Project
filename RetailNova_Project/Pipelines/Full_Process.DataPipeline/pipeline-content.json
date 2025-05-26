@@ -1,0 +1,1035 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Lookup OLTP Tables",
+        "type": "Lookup",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "source": {
+            "type": "SqlServerSource",
+            "sqlReaderQuery": "SELECT SCHEMA_NAME(t.schema_id) AS schema_name,\n\t\t\t\t\tt.name as table_name\nFROM sys.tables t\nWHERE SCHEMA_NAME(t.schema_id) = 'OLTP'\nORDER BY table_name",
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "firstRowOnly": false,
+          "datasetSettings": {
+            "annotations": [],
+            "type": "SqlServerTable",
+            "schema": [],
+            "typeProperties": {
+              "database": "RetailNova"
+            },
+            "externalReferences": {
+              "connection": "ab2ae604-4343-4950-a472-bbd5d2889ef5"
+            }
+          }
+        }
+      },
+      {
+        "name": "ForEach OLTP Tables",
+        "type": "ForEach",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [
+          {
+            "activity": "Lookup OLTP Tables",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "items": {
+            "value": "@activity('Lookup OLTP Tables').output.value",
+            "type": "Expression"
+          },
+          "isSequential": true,
+          "activities": [
+            {
+              "name": "Copy OLTP to Bronze",
+              "type": "Copy",
+              "dependsOn": [],
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureOutput": false,
+                "secureInput": false
+              },
+              "typeProperties": {
+                "source": {
+                  "type": "SqlServerSource",
+                  "queryTimeout": "02:00:00",
+                  "partitionOption": "None",
+                  "datasetSettings": {
+                    "annotations": [],
+                    "type": "SqlServerTable",
+                    "schema": [],
+                    "typeProperties": {
+                      "schema": {
+                        "value": "@{item().schema_name}",
+                        "type": "Expression"
+                      },
+                      "table": {
+                        "value": "@{item().table_name}",
+                        "type": "Expression"
+                      },
+                      "database": "RetailNova"
+                    },
+                    "externalReferences": {
+                      "connection": "ab2ae604-4343-4950-a472-bbd5d2889ef5"
+                    }
+                  }
+                },
+                "sink": {
+                  "type": "LakehouseTableSink",
+                  "tableActionOption": "OverwriteSchema",
+                  "partitionOption": "None",
+                  "datasetSettings": {
+                    "annotations": [],
+                    "linkedService": {
+                      "name": "LH_Bronze",
+                      "properties": {
+                        "annotations": [],
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+                          "artifactId": "738a4ae6-13f4-4aca-b876-664aa7aaa6bc",
+                          "rootFolder": "Tables"
+                        }
+                      }
+                    },
+                    "type": "LakehouseTable",
+                    "schema": [],
+                    "typeProperties": {
+                      "table": {
+                        "value": "@item().table_name",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                },
+                "enableStaging": false,
+                "translator": {
+                  "type": "TabularTranslator",
+                  "typeConversion": true,
+                  "typeConversionSettings": {
+                    "allowDataTruncation": false,
+                    "treatBooleanAsNumber": false
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Bronze to Silver",
+        "type": "TridentNotebook",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [
+          {
+            "activity": "ForEach OLTP Tables",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "4033b7d7-1f0d-461f-a5aa-593fa88459d2",
+          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+          "parameters": {
+            "workspace_name": {
+              "value": "RetailNova_Dev",
+              "type": "string"
+            },
+            "bronze_lakehouse_name": {
+              "value": "LH_Bronze",
+              "type": "string"
+            },
+            "silver_lakehouse_name": {
+              "value": "LH_Silver",
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "Silver to Gold",
+        "type": "TridentNotebook",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [
+          {
+            "activity": "Bronze to Silver",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "903f389e-f8f5-4ec2-8bca-d0f21763c0fa",
+          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+          "parameters": {
+            "workspace_name": {
+              "value": "RetailNova_Dev",
+              "type": "string"
+            },
+            "silver_lakehouse_name": {
+              "value": "LH_Silver",
+              "type": "string"
+            },
+            "gold_lakehouse_name": {
+              "value": "LH_Gold",
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "ForEach_m4l",
+        "type": "ForEach",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [
+          {
+            "activity": "Silver to Gold",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "items": {
+            "value": "@pipeline().parameters.cw_items_m4l",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "name": "Copy_m4l",
+              "type": "Copy",
+              "dependsOn": [],
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureOutput": false,
+                "secureInput": false
+              },
+              "typeProperties": {
+                "source": {
+                  "type": "LakehouseTableSource",
+                  "datasetSettings": {
+                    "annotations": [],
+                    "linkedService": {
+                      "name": "LH_Gold",
+                      "properties": {
+                        "annotations": [],
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+                          "artifactId": "0935ecad-505a-4d1a-8231-9715e56be5fd",
+                          "rootFolder": "Tables"
+                        }
+                      }
+                    },
+                    "type": "LakehouseTable",
+                    "schema": [],
+                    "typeProperties": {
+                      "table": {
+                        "value": "@item().source.table",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                },
+                "sink": {
+                  "type": "DataWarehouseSink",
+                  "preCopyScript": {
+                    "value": "TRUNCATE TABLE @{item().destination.table};",
+                    "type": "Expression"
+                  },
+                  "allowCopyCommand": true,
+                  "copyCommandSettings": {},
+                  "tableOption": "autoCreate",
+                  "disableMetricsCollection": false,
+                  "datasetSettings": {
+                    "annotations": [],
+                    "linkedService": {
+                      "name": "WH_Report",
+                      "properties": {
+                        "annotations": [],
+                        "type": "DataWarehouse",
+                        "typeProperties": {
+                          "endpoint": "4sjwxw63n3pezhjh3drmlajhvu-fzrdgcitdowu7ggpzleyf6jixe.datawarehouse.fabric.microsoft.com",
+                          "artifactId": "8bb36402-1724-4f89-802f-05ca80159d41",
+                          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9"
+                        }
+                      }
+                    },
+                    "type": "DataWarehouseTable",
+                    "schema": [],
+                    "typeProperties": {
+                      "schema": "dbo",
+                      "table": {
+                        "value": "@item().destination.table",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                },
+                "enableStaging": true,
+                "translator": {
+                  "value": "@item().copyActivity.translator",
+                  "type": "Expression"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Semantic model refresh1",
+        "type": "PBISemanticModelRefresh",
+        "dependsOn": [
+          {
+            "activity": "ForEach_m4l",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "method": "post",
+          "waitOnCompletion": true,
+          "commitMode": "Transactional",
+          "operationType": "SemanticModelRefresh",
+          "groupId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+          "datasetId": "55b51bf2-64e3-4086-b5bf-a299958def52"
+        },
+        "externalReferences": {
+          "connection": "ff55038e-b4a2-4770-a279-bf2621be0d77"
+        }
+      }
+    ],
+    "parameters": {
+      "cw_items_m4l": {
+        "type": "Array",
+        "defaultValue": [
+          {
+            "source": {
+              "table": "DimCategory"
+            },
+            "destination": {
+              "table": "DimCategory"
+            },
+            "copyActivity": {
+              "translator": {
+                "type": "TabularTranslator",
+                "mappings": [
+                  {
+                    "source": {
+                      "name": "CategoryKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "CategoryKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "CategoryName",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "CategoryName",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "source": {
+              "table": "DimCustomer"
+            },
+            "destination": {
+              "table": "DimCustomer"
+            },
+            "copyActivity": {
+              "translator": {
+                "type": "TabularTranslator",
+                "mappings": [
+                  {
+                    "source": {
+                      "name": "CustomerKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "CustomerKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "CustomerSourceID",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "CustomerSourceID",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "CustomerName",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "CustomerName",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "CustomerSegment",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "CustomerSegment",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "source": {
+              "table": "DimDate"
+            },
+            "destination": {
+              "table": "DimDate"
+            },
+            "copyActivity": {
+              "translator": {
+                "type": "TabularTranslator",
+                "mappings": [
+                  {
+                    "source": {
+                      "name": "Date",
+                      "type": "Date",
+                      "physicalType": "date"
+                    },
+                    "sink": {
+                      "name": "Date",
+                      "physicalType": "date"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "DateKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "DateKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "FullDate",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "FullDate",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "Month",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "Month",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "MonthName",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "MonthName",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "Year",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "Year",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "DayOfWeek",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "DayOfWeek",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "DayOfWeekName",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "DayOfWeekName",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "DayOfMonth",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "DayOfMonth",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "DayOfYear",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "DayOfYear",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "Quarter",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "Quarter",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "WeekOfYear",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "WeekOfYear",
+                      "physicalType": "int"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "source": {
+              "table": "DimProduct"
+            },
+            "destination": {
+              "table": "DimProduct"
+            },
+            "copyActivity": {
+              "translator": {
+                "type": "TabularTranslator",
+                "mappings": [
+                  {
+                    "source": {
+                      "name": "ProductKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "ProductKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ProductID_OLTP",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "ProductID_OLTP",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ProductName",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "ProductName",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ProductCategory",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "ProductCategory",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ProductBrand",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "ProductBrand",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "source": {
+              "table": "DimStore"
+            },
+            "destination": {
+              "table": "DimStore"
+            },
+            "copyActivity": {
+              "translator": {
+                "type": "TabularTranslator",
+                "mappings": [
+                  {
+                    "source": {
+                      "name": "StoreKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "StoreKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "CityName",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "CityName",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "source": {
+              "table": "FactSales"
+            },
+            "destination": {
+              "table": "FactSales"
+            },
+            "copyActivity": {
+              "translator": {
+                "type": "TabularTranslator",
+                "mappings": [
+                  {
+                    "source": {
+                      "name": "SalesOrderLineKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "SalesOrderLineKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "CustomerKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "CustomerKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ProductKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "ProductKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "StoreKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "StoreKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "OrderDateKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "OrderDateKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "CategoryKey",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "CategoryKey",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "OrderSourceID",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "OrderSourceID",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "CustomerSourceID",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "CustomerSourceID",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ProductID_OLTP",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "ProductID_OLTP",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ShippingCity",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "ShippingCity",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "PaymentMethod",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "PaymentMethod",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ShippingMethod",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "ShippingMethod",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "OrderStatus",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "OrderStatus",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "CustomerSegment",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "CustomerSegment",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "DeviceType",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "DeviceType",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ReferralSource",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "ReferralSource",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "PromotionApplied",
+                      "type": "String",
+                      "physicalType": "string"
+                    },
+                    "sink": {
+                      "name": "PromotionApplied",
+                      "physicalType": "varchar",
+                      "length": "8000"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "Quantity",
+                      "type": "Int32",
+                      "physicalType": "integer"
+                    },
+                    "sink": {
+                      "name": "Quantity",
+                      "physicalType": "int"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "PricePerUnit",
+                      "type": "Double",
+                      "physicalType": "double"
+                    },
+                    "sink": {
+                      "name": "PricePerUnit",
+                      "physicalType": "float"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "DiscountPct",
+                      "type": "Double",
+                      "physicalType": "double"
+                    },
+                    "sink": {
+                      "name": "DiscountPct",
+                      "physicalType": "float"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "SalesAmount",
+                      "type": "Double",
+                      "physicalType": "double"
+                    },
+                    "sink": {
+                      "name": "SalesAmount",
+                      "physicalType": "float"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "DiscountAmount",
+                      "type": "Double",
+                      "physicalType": "double"
+                    },
+                    "sink": {
+                      "name": "DiscountAmount",
+                      "physicalType": "float"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "GrossAmount",
+                      "type": "Double",
+                      "physicalType": "double"
+                    },
+                    "sink": {
+                      "name": "GrossAmount",
+                      "physicalType": "float"
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "OrderTimestamp",
+                      "type": "DateTime",
+                      "physicalType": "timestamp"
+                    },
+                    "sink": {
+                      "name": "OrderTimestamp",
+                      "physicalType": "datetime2",
+                      "precision": 6
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ProcessingTimestampSilver",
+                      "type": "DateTime",
+                      "physicalType": "timestamp"
+                    },
+                    "sink": {
+                      "name": "ProcessingTimestampSilver",
+                      "physicalType": "datetime2",
+                      "precision": 6
+                    }
+                  },
+                  {
+                    "source": {
+                      "name": "ProcessingTimestampGold",
+                      "type": "DateTime",
+                      "physicalType": "timestamp"
+                    },
+                    "sink": {
+                      "name": "ProcessingTimestampGold",
+                      "physicalType": "datetime2",
+                      "precision": 6
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

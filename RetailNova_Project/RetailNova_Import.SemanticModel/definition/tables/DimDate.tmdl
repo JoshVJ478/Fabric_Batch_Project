@@ -1,0 +1,119 @@
+table DimDate
+	lineageTag: 8846ea47-28c1-452f-8af0-12b37f98b1cc
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 394e9f80-0599-445b-9057-f934f7d552ef
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: 47d12328-2436-46a1-960e-48baffb9517e
+			defaultHierarchy: LocalDateTable_a27dd403-2949-419a-9fe8-02588860e6d4.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column DateKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 9af66200-805f-4d7d-80c2-3b48ea3a9985
+		summarizeBy: count
+		sourceColumn: DateKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullDate
+		dataType: string
+		lineageTag: 3f48405a-3e49-46ec-a16b-fca99832bb48
+		summarizeBy: none
+		sourceColumn: FullDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: string
+		lineageTag: dcacaaf0-ed1e-4f47-bf6c-72bc91336c4b
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: cf047389-ec50-42d5-a33e-5f71ba859b67
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: string
+		lineageTag: 4f94ba49-6641-4b76-9315-e12e4426de4c
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 6359dbac-1b73-4d6d-ab5c-ea4db24b96df
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeekName
+		dataType: string
+		lineageTag: fd4f5c15-4759-4bf2-b0e9-262f4d50ced7
+		summarizeBy: none
+		sourceColumn: DayOfWeekName
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfMonth
+		dataType: string
+		lineageTag: b9e77e48-a1b1-49a2-a603-d0f42a19bb23
+		summarizeBy: none
+		sourceColumn: DayOfMonth
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfYear
+		dataType: string
+		lineageTag: 2f7d4aae-2046-489a-a313-6e60b9d17c57
+		summarizeBy: none
+		sourceColumn: DayOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		dataType: string
+		lineageTag: 74d79f4f-4dc5-4276-9b88-4d066d64bc51
+		summarizeBy: none
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 2a797505-4dd4-4f8d-8308-cc1804c93ebe
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimDate = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("4sjwxw63n3pezhjh3drmlajhvu-fzrdgcitdowu7ggpzleyf6jixe.datawarehouse.fabric.microsoft.com", "WH_Report"),
+				    dbo_DimDate = Source{[Schema="dbo",Item="DimDate"]}[Data]
+				in
+				    dbo_DimDate
+
