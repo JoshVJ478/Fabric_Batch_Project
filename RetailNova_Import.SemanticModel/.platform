@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
-    "type": "Lakehouse",
-    "displayName": "DataflowsStagingLakehouse"
+    "type": "SemanticModel",
+    "displayName": "RetailNova_Import"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "f4ab5c00-c9c3-ac6d-422d-9cec8f6b03af"
+    "logicalId": "958def52-a299-b5bf-4086-64e355b51bf2"
   }
 }

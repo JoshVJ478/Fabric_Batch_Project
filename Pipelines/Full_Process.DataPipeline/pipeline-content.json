@@ -103,8 +103,8 @@
                         "annotations": [],
                         "type": "Lakehouse",
                         "typeProperties": {
-                          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897",
-                          "artifactId": "f8b1b017-3b83-4294-a9ea-7fc47416e097",
+                          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+                          "artifactId": "738a4ae6-13f4-4aca-b876-664aa7aaa6bc",
                           "rootFolder": "Tables"
                         }
                       }
@@ -154,8 +154,22 @@
           "secureInput": false
         },
         "typeProperties": {
-          "notebookId": "0f54b654-d566-4eb1-91b8-0f5fd58e3385",
-          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897"
+          "notebookId": "4033b7d7-1f0d-461f-a5aa-593fa88459d2",
+          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+          "parameters": {
+            "workspace_name": {
+              "value": "RetailNova_Dev",
+              "type": "string"
+            },
+            "bronze_lakehouse_name": {
+              "value": "LH_Bronze",
+              "type": "string"
+            },
+            "silver_lakehouse_name": {
+              "value": "LH_Silver",
+              "type": "string"
+            }
+          }
         }
       },
       {
@@ -179,8 +193,22 @@
           "secureInput": false
         },
         "typeProperties": {
-          "notebookId": "9b31f400-a92a-4257-ac18-0da5484a48c6",
-          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897"
+          "notebookId": "903f389e-f8f5-4ec2-8bca-d0f21763c0fa",
+          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+          "parameters": {
+            "workspace_name": {
+              "value": "RetailNova_Dev",
+              "type": "string"
+            },
+            "silver_lakehouse_name": {
+              "value": "LH_Silver",
+              "type": "string"
+            },
+            "gold_lakehouse_name": {
+              "value": "LH_Gold",
+              "type": "string"
+            }
+          }
         }
       },
       {
@@ -224,8 +252,8 @@
                         "annotations": [],
                         "type": "Lakehouse",
                         "typeProperties": {
-                          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897",
-                          "artifactId": "f42e90a7-cd42-4935-b59c-bdc5425d39c3",
+                          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+                          "artifactId": "0935ecad-505a-4d1a-8231-9715e56be5fd",
                           "rootFolder": "Tables"
                         }
                       }
@@ -242,7 +270,10 @@
                 },
                 "sink": {
                   "type": "DataWarehouseSink",
-                  "preCopyScript": "TRUNCATE TABLE @{item().destination.table};",
+                  "preCopyScript": {
+                    "value": "TRUNCATE TABLE @{item().destination.table};",
+                    "type": "Expression"
+                  },
                   "allowCopyCommand": true,
                   "copyCommandSettings": {},
                   "tableOption": "autoCreate",
@@ -255,9 +286,9 @@
                         "annotations": [],
                         "type": "DataWarehouse",
                         "typeProperties": {
-                          "endpoint": "4sjwxw63n3pezhjh3drmlajhvu-ntztu4fy2cjutjg5jjj7cfsis4.datawarehouse.fabric.microsoft.com",
-                          "artifactId": "c760ad98-d6a8-4510-97c1-d3ad75c33192",
-                          "workspaceId": "703af36c-d0b8-4993-a4dd-4a53f1164897"
+                          "endpoint": "4sjwxw63n3pezhjh3drmlajhvu-fzrdgcitdowu7ggpzleyf6jixe.datawarehouse.fabric.microsoft.com",
+                          "artifactId": "8bb36402-1724-4f89-802f-05ca80159d41",
+                          "workspaceId": "0933622e-1b13-4fad-98cf-cac982f928b9"
                         }
                       }
                     },
@@ -280,6 +311,36 @@
               }
             }
           ]
+        }
+      },
+      {
+        "name": "Semantic model refresh1",
+        "type": "PBISemanticModelRefresh",
+        "dependsOn": [
+          {
+            "activity": "ForEach_m4l",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "method": "post",
+          "waitOnCompletion": true,
+          "commitMode": "Transactional",
+          "operationType": "SemanticModelRefresh",
+          "groupId": "0933622e-1b13-4fad-98cf-cac982f928b9",
+          "datasetId": "55b51bf2-64e3-4086-b5bf-a299958def52"
+        },
+        "externalReferences": {
+          "connection": "ff55038e-b4a2-4770-a279-bf2621be0d77"
         }
       }
     ],
